@@ -14,7 +14,6 @@ def _bootstrap_on_connect(socketio):
 
 
 def add_socketio_handlers(socketio):
-
     def _emit_event():
         while True:
             if not OUTPUT_QUEUE.empty():
@@ -25,16 +24,17 @@ def add_socketio_handlers(socketio):
 
     @socketio.on('connect')
     def on_connect():
+        KILL_EVENT.clear()
         print('connecting')
         _bootstrap_on_connect(socketio)
         for fn in [HardwareIO('hardware').run, _emit_event]:
             t = Thread(target=fn)
             t.start()
 
-    # @socketio.on('disconnect')
-    # def on_disconnect():
-    #     KILL_EVENT.set()
-    #     print('disconnect')
+    @socketio.on('disconnect')
+    def on_disconnect():
+        KILL_EVENT.set()
+        print('disconnect')
 
     @socketio.on('message')
     def on_message(message):

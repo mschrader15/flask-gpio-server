@@ -1,8 +1,8 @@
-import random
 import time
 from queue import Queue
 from threading import Thread, Event
 from datetime import datetime
+from sources.rpi import HydrogenSensor
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
@@ -20,19 +20,23 @@ class HardwareIO:
         self.input_queue = INPUT_QUEUE
         self.kill_event = KILL_EVENT
 
+        self.hydrogen_sensor = HydrogenSensor(no_gpio=True)
+
     def run(self):
+        print('Hardware Starting')
         for fn in [self.implement_control, self.emit_readings]:
             t = Thread(target=fn)
             t.start()
+        while not self.kill_event.is_set():
+            time.sleep(REFRESH_RATE)
         if self.kill_event.is_set():
             print('killed threads')
             t.join()
 
     def emit_readings(self):
         while not self.kill_event.is_set():
-            timestamp = datetime.now().strftime(DATE_FMT)
-            value = random.randint(0, 100)
-            self._place_output({'x': [timestamp], 'y': [value]})
+            timestamp, value = self.hydrogen_sensor.get_reading()
+            self._place_output({'x': [timestamp.strftime(DATE_FMT)], 'y': [value]})
             time.sleep(REFRESH_RATE)
 
     def implement_control(self):
