@@ -23,17 +23,20 @@ class HydrogenSensor:
             import adafruit_ads1x15.ads1015 as ADS
             from adafruit_ads1x15.analog_in import AnalogIn
 
-            # Create the I2C bus
-            self.i2c = busio.I2C(board.SCL, board.SDA)
+            try:
+                # Create the I2C bus
+                self.i2c = busio.I2C(board.SCL, board.SDA)
 
-            # Create the ADC object using the I2C bus
-            self.ads = ADS.ADS1015(self.i2c)
-            self.ads.gain = 8
+                # Create the ADC object using the I2C bus
+                self.ads = ADS.ADS1015(self.i2c)
+                self.ads.gain = 8
 
-            # Create single-ended input on channel 0
-            self.chan = AnalogIn(self.i2c, ADS.P0)
+                # Create single-ended input on channel 0
+                self.chan = AnalogIn(self.i2c, ADS.P0)
 
-            self.get_reading = self._get_readings
+                self.get_reading = self._get_readings
+            except ValueError:
+                print('connection to the i2c not successful')
 
         else:
             self.get_reading = self._fake_readings
