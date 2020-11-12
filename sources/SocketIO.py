@@ -19,7 +19,7 @@ def add_socketio_handlers(socketio, flask=True):
             if not OUTPUT_QUEUE.empty():
                 data = OUTPUT_QUEUE.get()
                 print('fetched data', data)
-                socketio.emit('update', 'hi',)
+                socketio.emit('update', data)
             time.sleep(UPDATE_INTERVAL)
 
     if flask:
