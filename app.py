@@ -11,7 +11,7 @@ def create_app(register_blueprint=True):
     app.secret_key = os.urandom(42)
     if register_blueprint:
         app.register_blueprint(dashboard_bp)
-    socketio = SocketIO(app)
+    socketio = SocketIO(app, cors_allowed_origins="*")
     # socketio.on_event('connect', dashboard_bp)
     return socketio, app
 
@@ -21,4 +21,4 @@ socketio, application = create_app()
 add_socketio_handlers(socketio)
 
 if __name__ == '__main__':
-    socketio.run(application)
+    socketio.run(application, host='127.0.0.1', port='5000')

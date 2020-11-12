@@ -94,10 +94,11 @@ $(document).ready(function(){
     $("#solenoid-one").click(function(){
         if($(this).prop("checked") == true){
             console.log("Checkbox is checked.");
-            socket.emit("message", "radio 1 checked")
+            socket.emit("message", "on")
         }
         else if($(this).prop("checked") == false){
             console.log("Checkbox is unchecked.");
+            socket.emit("message", "off")
         }
     });
 });

@@ -14,3 +14,4 @@ redis
 six
 uWSGI
 Werkzeug
+eventlet

@@ -4,6 +4,20 @@ from threading import Thread, Event
 from datetime import datetime
 from sources.rpi import HydrogenSensor
 
+try:
+    GPIO_OKAY = True
+    import RPi.GPIO as GPIO
+    CONTROL_PIN = 16
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(CONTROL_PIN, GPIO.OUT)
+    HIGH = GPIO.HIGH
+    LOW = GPIO.LOW
+    GPIO.output(CONTROL_PIN, HIGH)
+
+except ModuleNotFoundError:
+    GPIO_OKAY = False
+    pass
+
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
 OUTPUT_QUEUE = Queue()
@@ -12,6 +26,7 @@ KILL_EVENT = Event()
 
 REFRESH_RATE = 1 # seconds
 
+
 class HardwareIO:
 
     def __init__(self, name):
@@ -19,7 +34,6 @@ class HardwareIO:
         self.output_queue = OUTPUT_QUEUE
         self.input_queue = INPUT_QUEUE
         self.kill_event = KILL_EVENT
-
         self.hydrogen_sensor = HydrogenSensor(no_gpio=True)
 
     def run(self):
@@ -49,6 +63,11 @@ class HardwareIO:
     def _check_input(self):
         if not self.input_queue.empty():
             print("Control Thread receive control: ", self.input_queue.get())
+            if GPIO_OKAY:
+                if self.input_queue.get() == 'on':
+                    GPIO.output(CONTROL_PIN, LOW)
+                else:
+                    GPIO.output(CONTROL_PIN, HIGH)
             return self.input_queue.get()
 
     def _place_output(self, value):
