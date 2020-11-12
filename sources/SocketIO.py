@@ -1,25 +1,24 @@
-from flask import request
-from sources.threadedControl import KILL_EVENT, INPUT_QUEUE, OUTPUT_QUEUE, HardwareIO
 import time
 from threading import Thread
-from index import MESSAGE_QUEUE
 from datetime import datetime
+from flask import request
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
-
 UPDATE_INTERVAL = 0.5
+
 
 def _bootstrap_on_connect(socketio):
     socketio.emit('bootstrap', {'x': [datetime.now().strftime(DATE_FMT)], 'y': [0]})
 
 
-def add_socketio_handlers(socketio, flask=True):
+def add_socketio_handlers(socketio, hardware_class, flask=True):
 
-    def _emit_event():
+    def _emit_event(output_queue):
         while True:
-            if not OUTPUT_QUEUE.empty():
-                data = OUTPUT_QUEUE.get()
+            if not output_queue.empty():
+                data = output_queue.get()
                 emit_name = 'update' if data[0] == 'update' else 'reply-message'
+                # emit_data =
                 print('emitting: ', data)
                 socketio.emit(emit_name, data[1:][0])
             time.sleep(UPDATE_INTERVAL)
@@ -27,39 +26,26 @@ def add_socketio_handlers(socketio, flask=True):
     if flask:
         @socketio.on('connect')
         def on_connect():
-            KILL_EVENT.clear()
+            hardware_class.clients.append(request.sid)
+            print(request.sid)
+            hardware_class.kill_event.clear()
             print('connecting')
             _bootstrap_on_connect(socketio)
-            for fn in [_emit_event]:
-                t = Thread(target=fn)
-                t.start()
+            t = Thread(target=_emit_event, args=(hardware_class.output_queue, ))
+            t.start()
 
         @socketio.on('disconnect')
         def on_disconnect():
-            KILL_EVENT.set()
+            while request.sid in hardware_class.clients:
+                hardware_class.clients.remove(request.sid)
             print('disconnect')
+            if len(hardware_class.clients) < 1:
+                print('last listener disconnected. sleeping hardware')
+                hardware_class.kill_event.set()
 
         @socketio.on('message')
         def on_message(message):
-            INPUT_QUEUE.put(message)
-    else:
-        @socketio.event
-        def connect(sid, environ):
-            KILL_EVENT.clear()
-            print('connecting')
-            _bootstrap_on_connect(socketio)
-            for fn in [HardwareIO('hardware').run, _emit_event]:
-                t = Thread(target=fn)
-                t.start()
-
-        @socketio.on
-        def disconnect(sid, environ):
-            KILL_EVENT.set()
-            print('disconnect')
-
-        @socketio.on('message')
-        def on_message(message):
-            INPUT_QUEUE.put(message)
+            hardware_class.input_queue.put(message)
 
     # @socketio.on_error_default
     # def default_error_handler(e):

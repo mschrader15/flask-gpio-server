@@ -92,11 +92,17 @@ socket.on('update', function (msg) {
 });
 
 socket.on('reply-message', function (msg) {
-    if (msg === 'opened'){
-        $("#solenoid-one").checked = true;
+    if (msg === 'in_valve_opened'){
+        $("#solenoid-one").prop("checked", true)
     }
-    if (msg === 'closed'){
-        $("#solenoid-one").checked = false;
+    if (msg === 'in_valve_closed'){
+        $("#solenoid-one").prop("checked", false)
+    }
+    if (msg === 'out_valve_opened'){
+        $("#solenoid-two").prop("checked", true)
+    }
+    if (msg === 'out_valve_closed'){
+        $("#solenoid-two").prop("checked", false)
     }
 });
 
@@ -109,6 +115,16 @@ $(document).ready(function(){
         else if($(this).prop("checked") == false){
             console.log("Checkbox is unchecked.");
             socket.emit("message", "off_0")
+        }
+    });
+     $("#solenoid-two").click(function(){
+        if($(this).prop("checked") == true){
+            console.log("Checkbox is checked.");
+            socket.emit("message", "on_1")
+        }
+        else if($(this).prop("checked") == false){
+            console.log("Checkbox is unchecked.");
+            socket.emit("message", "off_1")
         }
     });
 });

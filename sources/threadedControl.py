@@ -7,9 +7,6 @@ from sources.rpi import SolenoidValve
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
-OUTPUT_QUEUE = Queue()
-INPUT_QUEUE = Queue()
-KILL_EVENT = Event()
 
 REFRESH_RATE = 1 # seconds
 
@@ -17,10 +14,12 @@ REFRESH_RATE = 1 # seconds
 class HardwareIO:
 
     def __init__(self, name, in_valve_pin, out_valve_pin):
+        self.clients = []
         self.name = name
-        self.output_queue = OUTPUT_QUEUE
-        self.input_queue = INPUT_QUEUE
-        self.kill_event = KILL_EVENT
+        self.currently_off = True
+        self.output_queue = Queue()
+        self.input_queue = Queue()
+        self.kill_event = Event()
         self.hydrogen_sensor = HydrogenSensor()
         self.valves = [SolenoidValve('in_valve', in_valve_pin), SolenoidValve('out_valve', out_valve_pin)]
 
@@ -31,15 +30,17 @@ class HardwareIO:
             t.start()
         while True:
             time.sleep(REFRESH_RATE)
-            if self.kill_event.is_set():
+            if self.kill_event.is_set() and not self.currently_off:
                 for action in ('off_0', 'off_1'):
                     self._take_action(action)
+                self.currently_off = True
                 print('valves are off')
 
     def emit_readings(self):
-        while not self.kill_event.is_set():
-            timestamp, value = self.hydrogen_sensor.get_reading()
-            self._place_output(['update', {'x': [timestamp.strftime(DATE_FMT)], 'y': [value]}])
+        while True:
+            if not self.kill_event.is_set():
+                timestamp, value = self.hydrogen_sensor.get_reading()
+                self._place_output(['update', {'x': [timestamp.strftime(DATE_FMT)], 'y': [value]}])
             time.sleep(REFRESH_RATE)
 
     def implement_control(self):
@@ -63,12 +64,13 @@ class HardwareIO:
         if on_off == 'on':
             self.valves[int(valve)].open()
             print(control)
+            self.currently_off = False
         else:
             self.valves[int(valve)].close()
             print(control)
 
     def _emit_control(self):
         for valve in self.valves:
-            self.output_queue.put(['valve_status', valve.status])
+            self.output_queue.put(['valve_status', "_".join([valve.name, valve.status])])
 
 

@@ -17,34 +17,36 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row">
+        <div class="row" style="margin-top: 5em">
           <div class="col-sm-2">
           </div>
-          <div class="col-sm-4">
-            <div class="card">
+          <div class="col-sm-3">
+            <div class="card text-center">
               <div class="card-body">
+                <h5 class="card-title">Input Valve</h5>
                 <label class="switch">
-                  <h5 class="card-title">Input Solenoid</h5>
-                  <input id="solenoid-one" type="checkbox">
+                    <input id="solenoid-one" type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="card text-center">
+              <div class="card-body">
+               <h5 class="card-title">Output Valve</h5>
+                <label class="switch">
+                  <input id="solenoid-two" type="checkbox">
                   <span class="slider round"></span>
                 </label>
               </div>
             </div>
           </div>
-          <div class="col-sm-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
-          </div>
         </div>
         <div class="row">
-            <div class="col-md-2"></div>
+            <div class="col-sm-2"></div>
 {#            <div id="plot" class="col-md-8" style="width:90%;height:80vh;margin-left:5%"></div>#}
-             <div id="plot" class="col-md-8" style="height:80vh"></div>
+             <div id="plot" class="col-sm-8" style="height:80vh"></div>
         </div>
     </div>
 
