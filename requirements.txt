@@ -15,4 +15,5 @@ six
 uWSGI
 Werkzeug
 eventlet
-adafruit_ads1x15
+adafruit-blinka
+adafruit-circuitpython-ads1x15
