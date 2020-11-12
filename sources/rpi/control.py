@@ -37,7 +37,7 @@ class HydrogenSensor:
                 self.get_reading = self._get_readings
             except ValueError:
                 print('connection to the i2c not successful')
-
+                self.get_reading = self._fake_readings
         else:
             self.get_reading = self._fake_readings
 
