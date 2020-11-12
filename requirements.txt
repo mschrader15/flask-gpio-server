@@ -15,3 +15,4 @@ six
 uWSGI
 Werkzeug
 eventlet
+adafruit_ads1x15

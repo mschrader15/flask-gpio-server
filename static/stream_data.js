@@ -87,18 +87,28 @@ socket.on('bootstrap', function (msg) {
 });
 
 socket.on('update', function (msg) {
+    console.log(msg.x, msg.y );
     streamPlotly( msg.x, msg.y )
+});
+
+socket.on('reply-message', function (msg) {
+    if (msg === 'opened'){
+        $("#solenoid-one").checked = true;
+    }
+    if (msg === 'closed'){
+        $("#solenoid-one").checked = false;
+    }
 });
 
 $(document).ready(function(){
     $("#solenoid-one").click(function(){
         if($(this).prop("checked") == true){
             console.log("Checkbox is checked.");
-            socket.emit("message", "on")
+            socket.emit("message", "on_0")
         }
         else if($(this).prop("checked") == false){
             console.log("Checkbox is unchecked.");
-            socket.emit("message", "off")
+            socket.emit("message", "off_0")
         }
     });
 });

@@ -7,19 +7,21 @@ from datetime import datetime
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
-UPDATE_INTERVAL = 1
+UPDATE_INTERVAL = 0.5
 
 def _bootstrap_on_connect(socketio):
     socketio.emit('bootstrap', {'x': [datetime.now().strftime(DATE_FMT)], 'y': [0]})
 
 
 def add_socketio_handlers(socketio, flask=True):
+
     def _emit_event():
         while True:
             if not OUTPUT_QUEUE.empty():
                 data = OUTPUT_QUEUE.get()
-                print('fetched data', data)
-                socketio.emit('update', data)
+                emit_name = 'update' if data[0] == 'update' else 'reply-message'
+                print('emitting: ', data)
+                socketio.emit(emit_name, data[1:][0])
             time.sleep(UPDATE_INTERVAL)
 
     if flask:
@@ -28,7 +30,7 @@ def add_socketio_handlers(socketio, flask=True):
             KILL_EVENT.clear()
             print('connecting')
             _bootstrap_on_connect(socketio)
-            for fn in [HardwareIO('hardware').run, _emit_event]:
+            for fn in [_emit_event]:
                 t = Thread(target=fn)
                 t.start()
 
