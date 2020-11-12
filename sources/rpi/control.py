@@ -3,7 +3,7 @@ import random
 
 try:
     import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BCM)
     HIGH = GPIO.HIGH
     LOW = GPIO.LOW
     GPIO_OKAY = True
