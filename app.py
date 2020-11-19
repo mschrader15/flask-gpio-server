@@ -1,12 +1,11 @@
 from flask import Flask
 from sources.SocketIO import add_socketio_handlers
 from flask_socketio import SocketIO
-from sources.dashboard import dashboard_bp
+from sources.dashboard import get_blueprint
 from sources.threadedControl import HardwareIO
 import os
 import time
 from threading import Thread
-from index import MESSAGE_QUEUE
 
 # for socketio you have to do this patch
 from eventlet import wsgi
@@ -26,7 +25,7 @@ def create_app(register_blueprint=True):
     app = Flask(__name__)
     app.secret_key = os.urandom(42)
     if register_blueprint:
-        app.register_blueprint(dashboard_bp)
+        app.register_blueprint(get_blueprint(hardware_class))
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
     # socketio.on_event('connect', dashboard_bp)
     return socketio, app

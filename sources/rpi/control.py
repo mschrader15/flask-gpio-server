@@ -1,5 +1,9 @@
 from datetime import datetime
 import random
+import board
+import busio
+import adafruit_ads1x15.ads1015 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 
 try:
     import RPi.GPIO as GPIO
@@ -18,10 +22,6 @@ class HydrogenSensor:
     def __init__(self,):
 
         if GPIO_OKAY:
-            import board
-            import busio
-            import adafruit_ads1x15.ads1015 as ADS
-            from adafruit_ads1x15.analog_in import AnalogIn
 
             try:
                 # Create the I2C bus
@@ -35,6 +35,7 @@ class HydrogenSensor:
                 self.chan = AnalogIn(self.i2c, ADS.P0)
 
                 self.get_reading = self._get_readings
+
             except ValueError:
                 print('connection to the i2c not successful')
                 self.get_reading = self._fake_readings

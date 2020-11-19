@@ -73,4 +73,10 @@ class HardwareIO:
         for valve in self.valves:
             self.output_queue.put(['valve_status', "_".join([valve.name, valve.status])])
 
+    def control_valve(self, num, action):
+        if action == 'open':
+            self.valves[num].open()
+        else:
+            self.valves[num].close()
+
 
