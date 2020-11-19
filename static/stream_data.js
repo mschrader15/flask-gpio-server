@@ -36,9 +36,10 @@ function makePlotly( x, y ){
                         automargin: true,
                       // gridcolor: '#000',
                       // gridwidth: 'rgb(255, 255, 2555)',
-                        range: [0, 100],
-                        title: "Random Number",
-                        dtick: 5
+                        autoscale: true,
+                        // range: [0, 100],
+                        title: "Voltage (V)",
+                        // dtick: 5
                   },
                   xaxis: {
                           linecolor: 'black',
