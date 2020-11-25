@@ -4,11 +4,9 @@ from threading import Thread, Event
 from datetime import datetime
 from sources.rpi import HydrogenSensor
 from sources.rpi import SolenoidValve
+from index import REFRESH_RATE
 
-DATE_FMT = "%Y-%m-%d %H:%M:%S"
-
-
-REFRESH_RATE = 1 # seconds
+DATE_FMT = "%Y-%m-%d %H:%M:%S.%f"
 
 
 class HardwareIO:
@@ -25,7 +23,8 @@ class HardwareIO:
 
     def run(self):
         print('Hardware Starting')
-        for fn in [self.implement_control, self.emit_readings]:
+        # for fn in [self.implement_control, self.emit_readings]:
+        for fn in [self.emit_readings]:
             t = Thread(target=fn)
             t.start()
         while True:
@@ -40,7 +39,8 @@ class HardwareIO:
         while True:
             if not self.kill_event.is_set():
                 timestamp, value = self.hydrogen_sensor.get_reading()
-                self._place_output(['update', {'x': [timestamp.strftime(DATE_FMT)], 'y': [value]}])
+                # if self.record:
+                self._place_output(['update', {'x': [timestamp.strftime(DATE_FMT)[:-3]], 'y': [value]}])
             time.sleep(REFRESH_RATE)
 
     def implement_control(self):
@@ -74,6 +74,7 @@ class HardwareIO:
             self.output_queue.put(['valve_status', "_".join([valve.name, valve.status])])
 
     def control_valve(self, num, action):
+        print(num, action)
         if action == 'open':
             self.valves[num].open()
         else:

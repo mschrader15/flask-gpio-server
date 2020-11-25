@@ -1,3 +1,6 @@
+let downloadData = []
+let recordData = false
+
 function getWindow(lastDate) {
     var window = $('meta[name=x_window]').attr("content");
     var lastDateObj = new Date(lastDate);
@@ -84,12 +87,13 @@ socket.on('connect', function(msg) {
 socket.on('bootstrap', function (msg) {
     plot_start = msg.x[0];
     makePlotly( msg.x, msg.y )
-    console.log(msg.x, msg.y)
 });
 
 socket.on('update', function (msg) {
-    console.log(msg.x, msg.y );
-    streamPlotly( msg.x, msg.y )
+    streamPlotly( msg.x, msg.y );
+    if (recordData === true){
+        downloadData.push({time: msg.x, value: msg.y})
+    }
 });
 
 socket.on('reply-message', function (msg) {
@@ -107,25 +111,74 @@ socket.on('reply-message', function (msg) {
     }
 });
 
+function arrayToCSV (data) {
+  csv = data.map(row => Object.values(row));
+  csv.unshift(Object.keys(data[0]));
+  return csv.join('\n');
+}
+
+
 $(document).ready(function(){
+    let recording = false;
+
+    function  handleControl(url) {
+        $.getJSON(url,
+            function (data) {
+                //do nothing
+            });
+    }
+
     $("#solenoid-one").click(function(){
         if($(this).prop("checked") == true){
             console.log("Checkbox is checked.");
-            socket.emit("message", "on_0")
+            // socket.emit("message", "on_0")
+            handleControl('/solenoid_1_on')
         }
         else if($(this).prop("checked") == false){
             console.log("Checkbox is unchecked.");
-            socket.emit("message", "off_0")
+            // socket.emit("message", "off_0")
+            handleControl('/solenoid_1_off')
         }
     });
      $("#solenoid-two").click(function(){
         if($(this).prop("checked") == true){
             console.log("Checkbox is checked.");
-            socket.emit("message", "on_1")
+            // socket.emit("message", "on_1")
+            handleControl('/solenoid_2_on')
         }
         else if($(this).prop("checked") == false){
             console.log("Checkbox is unchecked.");
-            socket.emit("message", "off_1")
+            // socket.emit("message", "off_1");
+            handleControl('/solenoid_2_off')
         }
+    });
+    $("#record-data").click(function(){
+            recordData = true
+            recording = true
+            $(this).text('Recording...')
+            $("#download-data").prop('disabled', false)
+    });
+    $("#download-data").click(function(){
+            let filename = 'download.csv'
+            if (recording===true) {
+                recordData = false
+                recording = false
+                let csv = arrayToCSV(downloadData)
+                var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+                var csvURL =  null;
+                if (navigator.msSaveBlob) {
+                    csvURL = navigator.msSaveBlob(csvData, 'download.cv');
+                } else {
+                    csvURL = window.URL.createObjectURL(csvData);
+                }
+                var tempLink = document.createElement('a');
+                tempLink.href = csvURL;
+                tempLink.setAttribute('download', 'download.csv');
+                tempLink.click();
+                downloadData = [];
+                $("#record-data").prepend("<i class=\"fa fa-play\"></i>")
+                $("#record-data").text('Record Data')
+                $(this).prop('disabled', true)
+            }
     });
 });

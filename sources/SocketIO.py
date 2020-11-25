@@ -2,9 +2,9 @@ import time
 from threading import Thread
 from datetime import datetime
 from flask import request
+from index import REFRESH_RATE
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
-UPDATE_INTERVAL = 0.5
 
 
 def _bootstrap_on_connect(socketio):
@@ -21,7 +21,7 @@ def add_socketio_handlers(socketio, hardware_class, flask=True):
                 # emit_data =
                 print('emitting: ', data)
                 socketio.emit(emit_name, data[1:][0])
-            time.sleep(UPDATE_INTERVAL)
+            time.sleep(REFRESH_RATE)
 
     if flask:
         @socketio.on('connect')

@@ -52,10 +52,11 @@
             <div class="card text-center">
               <div class="card-body">
                <h5 class="card-title">Record Sensor Data?</h5>
-                <button type="button" class="btn btn-primary"><i class="fa fa-play"></i> Record Data</button>
-                <button class="btn btn-default btn-lg" onclick="location.href='/getPlotCSV'" type="button">
-                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
-                </button>
+                <button type="button" class="btn btn-primary" id="record-data" ><i class="fa fa-play"></i> Record Data</button>
+                <button type="button" class="btn btn-primary" id="download-data" disabled><i class="fa fa-download"></i> Download </button>
+{#                <button class="btn btn-default btn-lg" id="record-data" type="button">#}
+{#                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>#}
+{#                </button>#}
               </div>
             </div>
           </div>
