@@ -24,6 +24,7 @@ def add_socketio_handlers(socketio, hardware_class, flask=True):
             time.sleep(REFRESH_RATE)
 
     if flask:
+
         @socketio.on('connect')
         def on_connect():
             hardware_class.clients.append(request.sid)

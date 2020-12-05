@@ -77,6 +77,7 @@ class HardwareIO:
         print(num, action)
         if action == 'open':
             self.valves[num].open()
+            self.currently_off = False
         else:
             self.valves[num].close()
 
