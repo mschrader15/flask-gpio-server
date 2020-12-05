@@ -1,8 +1,10 @@
 from datetime import datetime
 import random
+import math
 
 try:
     import RPi.GPIO as GPIO
+
     GPIO.setmode(GPIO.BCM)
     HIGH = GPIO.HIGH
     LOW = GPIO.LOW
@@ -14,8 +16,13 @@ except ModuleNotFoundError:
 
 
 class HydrogenSensor:
+    # MQ-8 Hydrogen Sensor Parameters:
+    H2Curve = [2.3, 0.93, -1.44]
+    R0 = 10  # kOhm
+    RL_VALUE = 10  # kOhm
+    BASE_VOLTAGE = 5
 
-    def __init__(self,):
+    def __init__(self, ):
 
         if GPIO_OKAY:
 
@@ -44,10 +51,16 @@ class HydrogenSensor:
             self.get_reading = self._fake_readings
 
     def _get_readings(self):
-        return datetime.now(), self.chan.voltage
+        return datetime.now(), self._convert_value(self.chan.voltage)
 
     def _fake_readings(self):
         return datetime.now(), random.randint(0, 100)
+
+    def _convert_value(self, voltage):
+        # from: http: // sandboxelectronics.com /?p = 196
+        R = self.RL_VALUE * (self.BASE_VOLTAGE - voltage) / self.BASE_VOLTAGE
+        ratio = R / self.R0
+        return math.pow(10, ((math.log10(ratio) - self.H2Curve[1]) / self.H2Curve[2]) + self.H2Curve[0])
 
 
 class SolenoidValve:
