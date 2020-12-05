@@ -18,7 +18,7 @@ except ModuleNotFoundError:
 class HydrogenSensor:
     # MQ-8 Hydrogen Sensor Parameters:
     H2Curve = [2.3, 0.93, -1.44]
-    R0 = 10.71  # kOhm
+    R0 = 0.012  # 10.71  # kOhm  found this per the calibration process but it could be wrong
     RL_VALUE = 10  # kOhm
     BASE_VOLTAGE = 5
 
@@ -58,7 +58,7 @@ class HydrogenSensor:
 
     def _convert_value(self, voltage):
         # from: http: // sandboxelectronics.com /?p = 196
-        R = self.RL_VALUE * (self.BASE_VOLTAGE - voltage) / self.BASE_VOLTAGE
+        R = self.RL_VALUE * (self.BASE_VOLTAGE - voltage) / voltage
         ratio = R / self.R0
         return math.pow(10, ((math.log10(ratio) - self.H2Curve[1]) / self.H2Curve[2]) + self.H2Curve[0])
 
