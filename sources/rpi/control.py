@@ -19,7 +19,7 @@ class HydrogenSensor:
     # MQ-8 Hydrogen Sensor Parameters:
     H2Curve = [2.3, 0.93, -1.44]
     R0 = 10  # kOhm
-    RL_VALUE = 10  # kOhm
+    RL_VALUE = 9.78  # kOhm
     BASE_VOLTAGE = 5
 
     def __init__(self, ):
