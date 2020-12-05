@@ -19,7 +19,7 @@ def add_socketio_handlers(socketio, hardware_class, flask=True):
                 data = output_queue.get()
                 emit_name = 'update' if data[0] == 'update' else 'reply-message'
                 # emit_data =
-                print('emitting: ', data)
+                # print('emitting: ', data)
                 socketio.emit(emit_name, data[1:][0])
             time.sleep(REFRESH_RATE)
 
