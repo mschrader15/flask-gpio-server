@@ -31,7 +31,7 @@ function makePlotly(x, y) {
             // gridwidth: 'rgb(255, 255, 2555)',
             autoscale: true,
             // range: [0, 100],
-            title: "H<sub>2</sub>> [ppm]",
+            title: "H<sub>2</sub> [ppm]",
             // dtick: 5
         },
         xaxis: {
