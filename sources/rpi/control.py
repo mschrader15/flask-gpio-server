@@ -18,9 +18,9 @@ except ModuleNotFoundError:
 class HydrogenSensor:
     # MQ-8 Hydrogen Sensor Parameters:
     H2Curve = [2.3, 0.93, -1.44]
-    R0 = 0.012  # 10.71  # kOhm  found this per the calibration process but it could be wrong
-    RL_VALUE = 10  # kOhm
-    BASE_VOLTAGE = 5
+    R0 = 516  # 10.71  # kOhm  found this per the calibration process but it could be wrong
+    RL_VALUE = 15 # kOhm
+    BASE_VOLTAGE = 4.7 # V
 
     def __init__(self, ):
 
@@ -51,8 +51,8 @@ class HydrogenSensor:
             self.get_reading = self._fake_readings
 
     def _get_readings(self):
-        # return datetime.now(), self._convert_value(self.chan.voltage)
-        return datetime.now(), self.chan.voltage
+        return datetime.now(), self._convert_value(self.chan.voltage)
+        # return datetime.now(), self.chan.voltage
 
     def _fake_readings(self):
         return datetime.now(), random.randint(0, 100)
