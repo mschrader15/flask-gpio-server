@@ -6,13 +6,16 @@ from sources.threadedControl import HardwareIO
 import os
 import time
 from threading import Thread
+# from multiprocessing import Process
 
 # for socketio you have to do this patch
 from eventlet import wsgi
 
 
 def spawn_hardware_thread():
+    print('spawning hardware thread')
     hardware_control = HardwareIO('hardware', in_valve_pin=16, out_valve_pin=17)
+    hardware_control.kill_event.set()
     t = Thread(target=hardware_control.run)
     t.start()
     return hardware_control
@@ -22,6 +25,7 @@ hardware_class = spawn_hardware_thread()
 
 
 def create_app(register_blueprint=True):
+    print('creating app')
     app = Flask(__name__)
     app.secret_key = os.urandom(42)
     if register_blueprint:
@@ -44,6 +48,7 @@ if __name__ == '__main__':
     try:
         import eventlet
         eventlet.monkey_patch()
+        print('Entry Point')
         wsgi.server(eventlet.listen(('', 8000)), application)
         # socketio.run(application, port=8000)
     finally:

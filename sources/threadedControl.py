@@ -1,6 +1,7 @@
 import time
 from queue import Queue
 from threading import Thread, Event
+# from multiprocessing import Process, Event, Queue
 from datetime import datetime
 from sources.rpi import HydrogenSensor
 from sources.rpi import SolenoidValve
@@ -41,6 +42,7 @@ class HardwareIO:
                 timestamp, value = self.hydrogen_sensor.get_reading()
                 # if self.record:
                 self._place_output(['update', {'x': [timestamp.strftime(DATE_FMT)[:-3]], 'y': [value]}])
+                # print('emitting')
             time.sleep(REFRESH_RATE)
 
     def implement_control(self):

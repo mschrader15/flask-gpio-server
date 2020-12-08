@@ -1,13 +1,17 @@
 import time
 from threading import Thread
+# from multiprocessing import Process
 from datetime import datetime
 from flask import request
 from index import REFRESH_RATE
+
+REFRESH_RATE = REFRESH_RATE / 2
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
 
 def _bootstrap_on_connect(socketio):
+
     socketio.emit('bootstrap', {'x': [datetime.now().strftime(DATE_FMT)], 'y': [0]})
 
 
@@ -19,7 +23,6 @@ def add_socketio_handlers(socketio, hardware_class, flask=True):
                 data = output_queue.get()
                 emit_name = 'update' if data[0] == 'update' else 'reply-message'
                 # emit_data =
-                # print('emitting: ', data)
                 socketio.emit(emit_name, data[1:][0])
             time.sleep(REFRESH_RATE)
 
