@@ -51,7 +51,8 @@ class HydrogenSensor:
             self.get_reading = self._fake_readings
 
     def _get_readings(self):
-        return datetime.now(), self._convert_value(self.chan.voltage)
+        # return datetime.now(), self._convert_value(self.chan.voltage)
+        return datetime.now(), self.chan.voltage
 
     def _fake_readings(self):
         return datetime.now(), random.randint(0, 100)
